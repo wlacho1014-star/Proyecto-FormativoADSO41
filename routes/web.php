@@ -1,19 +1,34 @@
 <?php
 
+/**
+ * Rutas del sitio web público de FERREAGRO TYT.
+ *
+ * Evidencia GA7-220501096-AA4-EV03 - Componente front-end.
+ * Autor: José Wladimir Carrillo López - Ficha 3336129 (ADSO 41).
+ *
+ * Cada ruta tiene un nombre (->name()) para generar los enlaces de las
+ * vistas con la función route() en lugar de escribir las direcciones a mano.
+ */
+
 use App\Http\Controllers\InicioController;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\View;
 
+// La dirección raíz lleva a la página de inicio.
 Route::redirect('/', '/inicio');
 
-Route::get('/inicio', [InicioController::class, 'index']);
+// Inicio: las categorías las prepara el controlador.
+Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
 
-Route::get('/nosotros', function () {
-    return view('nosotros');
-});
+// Quiénes somos: página informativa sin datos dinámicos.
+Route::view('/nosotros', 'nosotros')->name('nosotros');
 
-// GET: catálogo con buscador
-Route::get('/productos', function (Request $request) {
+// Catálogo de productos (método GET).
+// Si llega el parámetro "buscar", se filtra por nombre o categoría.
+Route::get('/productos', function (Request $request): View {
+    // Productos de referencia del catálogo.
     $productos = [
         ['nombre' => 'Martillo de acero 16 oz', 'categoria' => 'Herramientas', 'precio' => 28000, 'descripcion' => 'Mango antideslizante para uso rudo.', 'imagen' => 'martillo.jpg'],
         ['nombre' => 'Taladro percutor 1/2"', 'categoria' => 'Herramientas eléctricas', 'precio' => 185000, 'descripcion' => 'Potente y con velocidad variable.', 'imagen' => 'taladro.jpg'],
@@ -23,31 +38,49 @@ Route::get('/productos', function (Request $request) {
         ['nombre' => 'Abono orgánico 50 kg', 'categoria' => 'Insumos agrícolas', 'precio' => 55000, 'descripcion' => 'Mejora y nutre el suelo del cultivo.', 'imagen' => 'abono.jpg'],
     ];
 
+    // Texto escrito en el buscador (null si no se envió nada).
     $buscar = $request->query('buscar');
 
     if ($buscar) {
-        $productos = array_filter($productos, function ($p) use ($buscar) {
+        // Se conservan los productos cuyo nombre o categoría contienen el texto.
+        $productos = array_filter($productos, function (array $producto) use ($buscar): bool {
             return str_contains(
-                mb_strtolower($p['nombre'] . ' ' . $p['categoria']),
+                mb_strtolower($producto['nombre'] . ' ' . $producto['categoria']),
                 mb_strtolower($buscar)
             );
         });
     }
 
     return view('productos', ['productos' => $productos, 'buscar' => $buscar]);
-});
+})->name('productos');
 
-// GET y POST: contacto
-Route::get('/contacto', function () {
-    return view('contacto');
-});
+// Contacto: la ruta GET muestra el formulario.
+Route::view('/contacto', 'contacto')->name('contacto');
 
-Route::post('/contacto', function (Request $request) {
-    $datos = $request->validate([
-        'nombre'  => 'required|min:3',
-        'correo'  => 'required|email',
-        'mensaje' => 'required|min:10',
-    ]);
+// Contacto: la ruta POST recibe y valida el formulario (método POST).
+Route::post('/contacto', function (Request $request): RedirectResponse {
+    $datos = $request->validate(
+        // Reglas de validación de cada campo.
+        [
+            'nombre' => 'required|min:3',
+            'correo' => 'required|email',
+            'mensaje' => 'required|min:10',
+        ],
+        // Mensajes de error en español (los mismos que usa sitio.js).
+        [
+            'required' => 'Escribe tu :attribute.',
+            'email' => 'Escribe un correo electrónico válido.',
+            'nombre.min' => 'El nombre debe tener al menos :min caracteres.',
+            'mensaje.min' => 'El mensaje debe tener al menos :min caracteres.',
+        ],
+        // Nombres de los campos tal como se muestran al usuario.
+        [
+            'correo' => 'correo electrónico',
+        ]
+    );
 
-    return back()->with('exito', 'Gracias, ' . $datos['nombre'] . '. Recibimos tu mensaje y te responderemos pronto.');
-});
+    // Si los datos son válidos, se vuelve al formulario con un aviso de éxito.
+    return redirect()
+        ->route('contacto')
+        ->with('exito', 'Gracias, ' . $datos['nombre'] . '. Recibimos tu mensaje y te responderemos pronto.');
+})->name('contacto.enviar');

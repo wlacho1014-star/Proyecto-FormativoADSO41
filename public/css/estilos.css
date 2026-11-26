@@ -1,0 +1,732 @@
+/* ==========================================================================
+   FERREAGRO TYT – Hoja de estilos del sitio web público
+   Evidencia GA7-220501096-AA4-EV03 · Componente front-end
+   Autor: José Wladimir Carrillo López · Ficha 3336129 (ADSO 41)
+
+   Convenciones de codificación:
+   - Nombres de clases con metodología BEM (bloque__elemento--modificador),
+     escritos en español y en minúsculas con guiones.
+   - Diseño "mobile first": los estilos base son para celular y las
+     media queries (min-width) amplían el diseño en pantallas grandes.
+   - Colores, tipografías y medidas centralizados en variables CSS (:root).
+   - Sangría de 4 espacios y una propiedad por línea.
+
+   Contenido:
+   1. Variables           8. Portada (héroe)
+   2. Base                9. Categorías
+   3. Accesibilidad      10. Catálogo de productos
+   4. Encabezado y menú  11. Quiénes somos
+   5. Franja decorativa  12. Contacto y formularios
+   6. Contenedor         13. Avisos
+   7. Botones            14. Pie de página y ajustes finales
+   ========================================================================== */
+
+
+/* 1. VARIABLES
+   Paleta tomada de la maquetación HTML de FERREAGRO TYT.
+   -------------------------------------------------------------------------- */
+:root {
+    /* Colores de marca */
+    --color-cafe: #5c3317;
+    --color-cafe-oscuro: #3b200e;
+    --color-amarillo: #f4b400;
+    --color-amarillo-suave: #fff1c2;
+    --color-rojo: #b12028;
+
+    /* Colores de apoyo */
+    --color-crema: #fff9eb;
+    --color-blanco: #ffffff;
+    --color-borde: #e6d8bc;
+    --color-texto: #3b200e;
+    --color-texto-suave: #6b5645;
+
+    /* Tipografías: Bitter (títulos) y Source Sans 3 (texto) */
+    --fuente-titulos: "Bitter", Georgia, "Times New Roman", serif;
+    --fuente-texto: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+
+    /* Medidas */
+    --ancho-maximo: 1100px;
+    --radio-tarjeta: 12px;
+    --radio-control: 8px;
+}
+
+
+/* 2. BASE
+   Reinicio mínimo de estilos y valores por defecto del documento.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--color-crema);
+    color: var(--color-texto);
+    font-family: var(--fuente-texto);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--fuente-titulos);
+    color: var(--color-cafe);
+    line-height: 1.2;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: var(--color-rojo);
+}
+
+
+/* 3. ACCESIBILIDAD
+   Enlace para saltar al contenido y indicador de foco visible.
+   -------------------------------------------------------------------------- */
+.salto {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    z-index: 10;
+    padding: 0.6rem 1rem;
+    background: var(--color-amarillo);
+    color: var(--color-cafe-oscuro);
+    font-weight: 700;
+}
+
+.salto:focus {
+    left: 1rem;
+    top: 1rem;
+}
+
+:focus-visible {
+    outline: 3px solid var(--color-rojo);
+    outline-offset: 3px;
+}
+
+/* Sobre fondo café el foco rojo no se ve: se usa el amarillo. */
+.encabezado :focus-visible,
+.pie :focus-visible {
+    outline-color: var(--color-amarillo);
+}
+
+
+/* 4. ENCABEZADO Y MENÚ
+   -------------------------------------------------------------------------- */
+.encabezado {
+    background: var(--color-cafe);
+    color: var(--color-crema);
+}
+
+.encabezado__interior {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.75rem;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.marca__logo {
+    width: 48px;
+    height: 48px;
+    border: 2px solid var(--color-amarillo);
+    border-radius: 50%;
+}
+
+.marca__texto {
+    display: flex;
+    flex-direction: column;
+}
+
+.marca__nombre {
+    font-family: var(--fuente-titulos);
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* El lema solo se muestra en pantallas medianas y grandes. */
+.marca__lema {
+    display: none;
+    font-size: 0.85rem;
+    color: var(--color-amarillo);
+}
+
+/* Botón del menú: solo existe cuando JavaScript está activo. */
+.menu__boton {
+    display: none;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--color-amarillo);
+    border-radius: var(--radio-control);
+    background: transparent;
+    color: var(--color-amarillo);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.js .menu__boton {
+    display: block;
+}
+
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+}
+
+/* Con JavaScript, el menú del celular queda oculto hasta pulsar el botón. */
+.js .menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    flex-direction: column;
+    padding: 0.5rem 1.25rem 1rem;
+    background: var(--color-cafe);
+    border-top: 1px solid rgba(255, 249, 235, 0.25);
+}
+
+.js .menu.menu--abierto {
+    display: flex;
+}
+
+.menu__enlace {
+    padding: 0.5rem 0;
+    border-bottom: 3px solid transparent;
+    color: var(--color-crema);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.menu__enlace:hover {
+    color: var(--color-amarillo);
+}
+
+.menu__enlace[aria-current="page"] {
+    border-bottom-color: var(--color-amarillo);
+    color: var(--color-amarillo);
+}
+
+
+/* 5. FRANJA DECORATIVA
+   Franja diagonal amarilla y café, como las cintas de las obras.
+   -------------------------------------------------------------------------- */
+.franja {
+    height: 10px;
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--color-amarillo) 0 12px,
+        var(--color-cafe) 12px 24px
+    );
+}
+
+
+/* 6. CONTENEDOR
+   -------------------------------------------------------------------------- */
+.contenedor {
+    width: 100%;
+    max-width: var(--ancho-maximo);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+}
+
+
+/* 7. BOTONES
+   -------------------------------------------------------------------------- */
+.boton {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    border: 2px solid transparent;
+    border-radius: var(--radio-control);
+    font: inherit;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.boton--primario {
+    background: var(--color-amarillo);
+    border-color: var(--color-amarillo);
+    color: var(--color-cafe-oscuro);
+}
+
+.boton--primario:hover {
+    background: var(--color-cafe);
+    border-color: var(--color-cafe);
+    color: var(--color-amarillo);
+}
+
+.boton--secundario {
+    background: transparent;
+    border-color: var(--color-cafe);
+    color: var(--color-cafe);
+}
+
+.boton--secundario:hover {
+    background: var(--color-cafe);
+    color: var(--color-crema);
+}
+
+
+/* 8. PORTADA (HÉROE)
+   -------------------------------------------------------------------------- */
+.heroe {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    padding-block: 2.5rem;
+}
+
+.heroe__titulo {
+    max-width: 16ch;
+    margin: 0 0 1rem;
+    font-size: clamp(2.1rem, 6vw, 3.4rem);
+}
+
+.heroe__texto {
+    max-width: 48ch;
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--color-texto-suave);
+}
+
+.heroe__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.heroe__logo {
+    justify-self: center;
+    width: min(70%, 212px);
+    border: 6px solid var(--color-amarillo);
+    border-radius: 50%;
+}
+
+
+/* 9. CATEGORÍAS
+   -------------------------------------------------------------------------- */
+.seccion {
+    padding-block: 2rem;
+}
+
+.seccion__titulo {
+    margin: 0 0 1.25rem;
+    font-size: 1.6rem;
+}
+
+.categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.categoria {
+    display: block;
+    height: 100%;
+    padding: 1.1rem 1.25rem;
+    background: var(--color-blanco);
+    border: 2px solid var(--color-borde);
+    border-left: 8px solid var(--color-amarillo);
+    border-radius: var(--radio-tarjeta);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s;
+}
+
+.categoria:hover {
+    border-color: var(--color-cafe);
+}
+
+.categoria__nombre {
+    display: block;
+    font-family: var(--fuente-titulos);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-cafe);
+}
+
+.categoria__detalle {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--color-texto-suave);
+}
+
+
+/* 10. CATÁLOGO DE PRODUCTOS
+   -------------------------------------------------------------------------- */
+.pagina {
+    padding-block: 2rem 1rem;
+}
+
+.pagina__titulo {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+}
+
+.pagina__intro {
+    max-width: 60ch;
+    margin: 0 0 1.5rem;
+    color: var(--color-texto-suave);
+}
+
+.buscador {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+}
+
+.buscador__campo {
+    display: flex;
+    flex: 1 1 220px;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.buscador__limpiar {
+    align-self: center;
+    font-weight: 600;
+}
+
+.resultados {
+    margin: 0 0 1rem;
+    color: var(--color-texto-suave);
+}
+
+.rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.producto {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+}
+
+.producto__marco {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1 / 1;
+    padding: 1rem;
+    background: var(--color-blanco);
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.producto__imagen {
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.producto__cuerpo {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.1rem 1.2rem;
+}
+
+.producto__categoria {
+    align-self: flex-start;
+    padding: 0.1rem 0.7rem;
+    border: 1.5px solid var(--color-rojo);
+    border-radius: 999px;
+    color: var(--color-rojo);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.producto__nombre {
+    margin: 0.2rem 0 0;
+    font-size: 1.15rem;
+    line-height: 1.25;
+}
+
+.producto__descripcion {
+    flex: 1;
+    margin: 0;
+    color: var(--color-texto-suave);
+}
+
+/* Etiqueta de precio con punta a la izquierda. */
+.producto__precio {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    padding: 0.3rem 1rem 0.3rem 1.5rem;
+    background: var(--color-amarillo);
+    clip-path: polygon(0.7rem 0, 100% 0, 100% 100%, 0.7rem 100%, 0 50%);
+    color: var(--color-cafe-oscuro);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.vacio {
+    padding: 1.5rem;
+    background: var(--color-blanco);
+    border: 2px dashed var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+}
+
+
+/* 11. QUIÉNES SOMOS
+   -------------------------------------------------------------------------- */
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tarjeta {
+    padding: 1.25rem 1.5rem;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-top: 6px solid var(--color-cafe);
+    border-radius: var(--radio-tarjeta);
+}
+
+.tarjeta__titulo {
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+}
+
+.tarjeta__texto {
+    margin: 0;
+}
+
+.valores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.valores__item {
+    padding: 0.5rem 1.1rem;
+    background: var(--color-amarillo);
+    border-radius: 999px;
+    color: var(--color-cafe-oscuro);
+    font-weight: 700;
+}
+
+
+/* 12. CONTACTO Y FORMULARIOS
+   -------------------------------------------------------------------------- */
+.contacto {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.datos {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+}
+
+.datos__termino {
+    font-weight: 700;
+    color: var(--color-cafe);
+}
+
+.datos__valor {
+    margin: 0;
+}
+
+.formulario {
+    padding: 1.5rem;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-tarjeta);
+}
+
+.formulario__titulo {
+    margin: 0 0 1.25rem;
+    font-size: 1.4rem;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.1rem;
+}
+
+.campo__etiqueta,
+.buscador label {
+    font-weight: 600;
+    color: var(--color-cafe);
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    background: var(--color-blanco);
+    border: 2px solid var(--color-borde);
+    border-radius: var(--radio-control);
+    color: var(--color-texto);
+    font: inherit;
+}
+
+textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+.campo--invalido input,
+.campo--invalido textarea {
+    border-color: var(--color-rojo);
+}
+
+.campo__error {
+    margin: 0;
+    color: var(--color-rojo);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.campo__error:empty {
+    display: none;
+}
+
+
+/* 13. AVISOS
+   -------------------------------------------------------------------------- */
+.aviso {
+    margin-bottom: 1.25rem;
+    padding: 0.9rem 1.1rem;
+    border-left: 6px solid;
+    border-radius: var(--radio-control);
+    font-weight: 600;
+}
+
+.aviso--exito {
+    background: var(--color-amarillo-suave);
+    border-color: var(--color-amarillo);
+    color: var(--color-cafe-oscuro);
+}
+
+
+/* 14. PIE DE PÁGINA Y AJUSTES FINALES
+   -------------------------------------------------------------------------- */
+.pie {
+    margin-top: 3rem;
+    padding-block: 1.75rem;
+    background: var(--color-cafe);
+    border-top: 6px solid var(--color-amarillo);
+    color: var(--color-crema);
+}
+
+.pie__interior {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.pie__nombre {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.pie__texto {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+}
+
+.pie__enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+}
+
+.pie a {
+    color: var(--color-amarillo);
+    font-weight: 600;
+}
+
+/* Pantallas medianas y grandes (a partir de 760 px de ancho). */
+@media (min-width: 760px) {
+    .marca__lema {
+        display: block;
+    }
+
+    /* El menú vuelve a mostrarse en una sola fila y se oculta el botón. */
+    .js .menu__boton {
+        display: none;
+    }
+
+    .js .menu {
+        position: static;
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        background: transparent;
+        border-top: 0;
+    }
+
+    .heroe {
+        grid-template-columns: 1.4fr 1fr;
+        padding-block: 4rem;
+    }
+
+    .heroe__logo {
+        justify-self: end;
+    }
+
+    .contacto {
+        grid-template-columns: 1fr 1.4fr;
+        align-items: start;
+    }
+}
+
+/* Respeta a quienes prefieren menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
+}
