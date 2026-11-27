@@ -21,7 +21,10 @@
      * Los textos son los mismos que devuelve el servidor (routes/web.php).
      * ---------------------------------------------------------------------- */
     const MINIMO_NOMBRE = 3;
+    const MAXIMO_NOMBRE = 60;
+    const MAXIMO_CORREO = 100;
     const MINIMO_MENSAJE = 10;
+    const MAXIMO_MENSAJE = 1000;
     const PATRON_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     /* ----------------------------------------------------------------------
@@ -78,6 +81,9 @@
                 if (valor.length < MINIMO_NOMBRE) {
                     return 'El nombre debe tener al menos ' + MINIMO_NOMBRE + ' caracteres.';
                 }
+                if (valor.length > MAXIMO_NOMBRE) {
+                    return 'El nombre no puede tener más de ' + MAXIMO_NOMBRE + ' caracteres.';
+                }
                 return '';
 
             case 'correo':
@@ -87,6 +93,9 @@
                 if (!PATRON_CORREO.test(valor)) {
                     return 'Escribe un correo electrónico válido.';
                 }
+                if (valor.length > MAXIMO_CORREO) {
+                    return 'El correo no puede tener más de ' + MAXIMO_CORREO + ' caracteres.';
+                }
                 return '';
 
             case 'mensaje':
@@ -95,6 +104,9 @@
                 }
                 if (valor.length < MINIMO_MENSAJE) {
                     return 'El mensaje debe tener al menos ' + MINIMO_MENSAJE + ' caracteres.';
+                }
+                if (valor.length > MAXIMO_MENSAJE) {
+                    return 'El mensaje no puede tener más de ' + MAXIMO_MENSAJE + ' caracteres.';
                 }
                 return '';
 

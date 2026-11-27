@@ -62,9 +62,9 @@ Route::post('/contacto', function (Request $request): RedirectResponse {
     $datos = $request->validate(
         // Reglas de validación de cada campo.
         [
-            'nombre' => 'required|min:3',
-            'correo' => 'required|email',
-            'mensaje' => 'required|min:10',
+            'nombre' => 'required|min:3|max:60',
+            'correo' => 'required|email|max:100',
+            'mensaje' => 'required|min:10|max:1000',
         ],
         // Mensajes de error en español (los mismos que usa sitio.js).
         [
@@ -72,6 +72,9 @@ Route::post('/contacto', function (Request $request): RedirectResponse {
             'email' => 'Escribe un correo electrónico válido.',
             'nombre.min' => 'El nombre debe tener al menos :min caracteres.',
             'mensaje.min' => 'El mensaje debe tener al menos :min caracteres.',
+            'nombre.max' => 'El nombre no puede tener más de :max caracteres.',
+            'correo.max' => 'El correo no puede tener más de :max caracteres.',
+            'mensaje.max' => 'El mensaje no puede tener más de :max caracteres.',
         ],
         // Nombres de los campos tal como se muestran al usuario.
         [
