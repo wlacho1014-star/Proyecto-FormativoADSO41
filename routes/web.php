@@ -45,7 +45,7 @@ Route::get('/productos', function (Request $request): View {
         // Se conservan los productos cuyo nombre o categoría contienen el texto.
         $productos = array_filter($productos, function (array $producto) use ($buscar): bool {
             return str_contains(
-                mb_strtolower($producto['nombre'] . ' ' . $producto['categoria']),
+                mb_strtolower($producto['nombre'].' '.$producto['categoria']),
                 mb_strtolower($buscar)
             );
         });
@@ -82,5 +82,5 @@ Route::post('/contacto', function (Request $request): RedirectResponse {
     // Si los datos son válidos, se vuelve al formulario con un aviso de éxito.
     return redirect()
         ->route('contacto')
-        ->with('exito', 'Gracias, ' . $datos['nombre'] . '. Recibimos tu mensaje y te responderemos pronto.');
+        ->with('exito', 'Gracias, '.$datos['nombre'].'. Recibimos tu mensaje y te responderemos pronto.');
 })->name('contacto.enviar');
